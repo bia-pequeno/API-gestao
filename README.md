@@ -84,13 +84,13 @@ Retorna uma mensagem de sucesso ao deletar a pessoa correspondente ao CPF fornec
 - python -m venv myenv
   
 ###  **Instale as dependências:**
-- pip install fastapi
-- pip install uvicorn
-- pip install starlette
+-     pip install fastapi
+-     pip install uvicorn
+-     pip install starlette
 
 ### Execução
 - **Para iniciar a API, utilize o comando:**
-- uvicorn main:app --reload
+-     uvicorn main:app --reload
 
 A API estará disponível em http://127.0.0.1:8000.
 
