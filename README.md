@@ -64,7 +64,7 @@ Retorna uma mensagem de sucesso ao deletar a pessoa correspondente ao CPF fornec
 
 ### Estrutura do Projeto
 /api-gestao-pessoas
-└── projectpython
+└── pythonproject
     ├── main.py
     └── index.html
 
@@ -78,7 +78,7 @@ Retorna uma mensagem de sucesso ao deletar a pessoa correspondente ao CPF fornec
 - git clone https://github.com/bia-pequeno/API-gestao.git
   
 ###  **Navegue até o diretório do projeto:**
-- cd API-gestao-pessoas/projectpython
+- cd API-gestao-pessoas/pythonproject
   
 ###  **Crie um Virtual Environment:**
 - python -m venv myenv
@@ -90,7 +90,9 @@ Retorna uma mensagem de sucesso ao deletar a pessoa correspondente ao CPF fornec
 
 ### Execução
 - **Para iniciar a API, utilize o comando:**
--     uvicorn main:app --reload
+-     uvicorn case:app --reload
+- ou
+-     python -m uvicorn case:app --reload
 
 A API estará disponível em http://127.0.0.1:8000.
 
