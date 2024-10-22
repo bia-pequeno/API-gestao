@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Pessoas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+        }
+
+        h1 {
+            color: #004b87; 
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #004b87; 
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f6a600; 
+            padding-bottom: 10px;
+        }
+
+        .response {
+            margin-top: 20px;
+        }
+
+        .lista-pessoas {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid #004b87; 
+            border-radius: 8px;
+            background-color: #e9f4fa; 
+            padding: 10px;
+        }
+
+        .lista-pessoas p {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #ccc; 
+        }
+
+        .lista-pessoas p:last-child {
+            border-bottom: none; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="inserir" class="mb-4">
+            <h2>Cadastrar Pessoa</h2>
+            <div class="mb-3">
+                <input type="text" id="nome" class="form-control" placeholder="Nome Completo" required>
+            </div>
+            <div class="mb-3">
+                <input type="date" id="data_nascimento" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="endereco" class="form-control" placeholder="Endereço" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="cpf" class="form-control" placeholder="CPF (xxx.xxx.xxx-xx)" required pattern="^\d{3}\.\d{3}\.\d{3}\-\d{2}$">
+            </div>
+            <div class="mb-3">
+                <select id="estado_civil" class="form-select" required>
+                    <option value="">Estado Civil</option>
+                    <option value="solteiro">Solteiro</option>
+                    <option value="casado">Casado</option>
+                    <option value="divorciado">Divorciado</option>
+                    <option value="viuvo">Viúvo</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+
+        <form id="buscar" class="mb-4">
+            <h2>Buscar Pessoa</h2>
+            <div class="mb-3">
+                <input type="text" id="cpf-buscar" class="form-control" placeholder="CPF" required>
+            </div>
+            <button type="submit" class="btn btn-info">Buscar</button>
+        </form>
+
+        <form id="editar" class="mb-4">
+            <h2>Editar Pessoa</h2>
+            <div class="mb-3">
+                <input type="text" id="cpf-editar" class="form-control" placeholder="CPF" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="nome-editar" class="form-control" placeholder="Nome Completo">
+            </div>
+            <div class="mb-3">
+                <input type="date" id="data_nascimento-editar" class="form-control" placeholder="Data de Nascimento">
+            </div>
+            <div class="mb-3">
+                <input type="text" id="endereco-editar" class="form-control" placeholder="Endereço">
+            </div>
+            <div class="mb-3">
+                <select id="estado_civil-editar" class="form-select">
+                    <option value="">Estado Civil</option>
+                    <option value="solteiro">Solteiro</option>
+                    <option value="casado">Casado</option>
+                    <option value="divorciado">Divorciado</option>
+                    <option value="viuvo">Viúvo</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Editar</button>
+        </form>
+
+        <form id="deletar" class="mb-4">
+            <h2>Deletar Pessoa</h2>
+            <div class="mb-3">
+                <input type="text" id="cpf-deletar" class="form-control" placeholder="CPF" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Deletar</button>
+        </form>
+
+        <form id="listar" class="mb-4">
+            <h2>Listar Pessoas</h2>
+            <button type="submit" class="btn btn-warning">Listar</button>
+        </form>
+
+        <div class="response" id="response"></div>
+        <div class="lista-pessoas" id="lista-pessoas"></div>
+    </div>
+
+    <script>
+        const responseDiv = document.getElementById('response');
+        const listaPessoasDiv = document.getElementById('lista-pessoas');
+
+        async function fazerRequisicao(url, method, body) {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Erro desconhecido');
+            }
+
+            return response.json();
+        }
+
+        
+        document.getElementById('inserir').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const body = {
+                nome_completo: document.getElementById('nome').value,
+                data_nascimento: document.getElementById('data_nascimento').value,
+                endereco: document.getElementById('endereco').value,
+                cpf: document.getElementById('cpf').value,
+                estado_civil: document.getElementById('estado_civil').value,
+            };
+
+            try {
+                const result = await fazerRequisicao('http://localhost:8000/pessoa/inserir', 'POST', body);
+                responseDiv.innerHTML = `<p>${result.mensagem}</p>`;
+                document.getElementById('inserir').reset(); 
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+
+        
+        document.getElementById('buscar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cpf = document.getElementById('cpf-buscar').value;
+
+            try {
+                const pessoa = await fazerRequisicao(`http://localhost:8000/pessoa/buscar/${cpf}`, 'GET');
+                responseDiv.innerHTML = `<p>Nome: ${pessoa.nome_completo}, Data de Nascimento: ${pessoa.data_nascimento}, Endereço: ${pessoa.endereco}, Estado Civil: ${pessoa.estado_civil}</p>`;
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+
+        
+        document.getElementById('editar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cpf = document.getElementById('cpf-editar').value;
+            const body = {
+                nome_completo: document.getElementById('nome-editar').value,
+                data_nascimento: document.getElementById('data_nascimento-editar').value,
+                endereco: document.getElementById('endereco-editar').value,
+                cpf: cpf,
+                estado_civil: document.getElementById('estado_civil-editar').value,
+            };
+
+            try {
+                const result = await fazerRequisicao(`http://localhost:8000/pessoa/editar${cpf}`, 'PUT', body);
+                responseDiv.innerHTML = `<p>${result.mensagem}</p>`;
+                document.getElementById('editar').reset();
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+
+        
+        document.getElementById('deletar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cpf = document.getElementById('cpf-deletar').value;
+
+            try {
+                const result = await fazerRequisicao(`http://localhost:8000/pessoa/apagar${cpf}`, 'DELETE');
+                responseDiv.innerHTML = `<p>${result.mensagem}</p>`;
+                document.getElementById('deletar').reset(); 
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+
+
+        document.getElementById('listar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+                const pessoas = await fazerRequisicao('http://localhost:8000/', 'GET');
+                listaPessoasDiv.innerHTML = '<h3>Pessoas Cadastradas</h3>' + pessoas.map(pessoa => 
+                    `<p>Nome: ${pessoa.nome_completo}, CPF: ${pessoa.cpf}, Data de Nascimento: ${pessoa.data_nascimento}, Endereço: ${pessoa.endereco}, Estado Civil: ${pessoa.estado_civil}</p>`
+                ).join('');
+            } catch (error) {
+                listaPessoasDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
