@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/api/(.*)",
+        "dest": "/pythonproject/case.py"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/pythonproject/index.html"
+      }
+    ]
+  }
+  

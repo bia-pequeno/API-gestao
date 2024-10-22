@@ -87,3 +87,7 @@ def deletar_pessoa(cpf:str):
     del database[cpf]
 
     return JSONResponse(content={"mensagem": "CPF deletado do sistema com sucesso"}, status_code=201)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
